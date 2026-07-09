@@ -57,6 +57,17 @@ export function parseRoster(rosterText: string): ParseResult {
     const catMatch = trimmed.match(categoryRegex);
     if (catMatch) {
       currentCategory = catMatch[1].trim();
+      currentUnit = {
+        id: currentCategory + '-' + Math.random().toString(36).substr(2, 9),
+        name: currentCategory,
+        points: 0,
+        category: currentCategory,
+        modelCount: 0,
+        rawText: trimmed,
+        isDivider: true,
+        isWarlord: false
+      };
+      units.push(currentUnit);
       continue;
     }
 
@@ -80,6 +91,11 @@ export function parseRoster(rosterText: string): ParseResult {
         'warlord', 'primarch', 'supreme commander', 'mounted', 'beast'
       ];
       
+      const isDivider = KNOWN_CATEGORIES.includes(name.toLowerCase());
+      if (isDivider) {
+         currentCategory = name.trim();
+      }
+
       // If it's a new unit, save the previous one if it exists
       currentUnit = {
         id: name + '-' + Math.random().toString(36).substr(2, 9), // Unique ID for DnD
@@ -88,7 +104,7 @@ export function parseRoster(rosterText: string): ParseResult {
         category: currentCategory,
         modelCount: 0, // We will count this in the following lines
         rawText: trimmed,
-        isDivider: KNOWN_CATEGORIES.includes(name.toLowerCase()),
+        isDivider: isDivider,
         isWarlord: trimmed.toLowerCase().includes('warlord')
       };
       units.push(currentUnit);
