@@ -13,10 +13,18 @@ interface UnitProfileViewProps {
 export function UnitProfileView({ unitData, parsedUnit, detachmentsDB, onBack }: UnitProfileViewProps) {
   const { stats, abilities, keywords } = unitData;
 
+  const allWeapons = [...(unitData.rangedWeapons || []), ...(unitData.meleeWeapons || [])];
+
   const filterWeapons = (weapons: any[]) => {
     if (!weapons || weapons.length === 0) return [];
-    const equipped = weapons.filter(w => parsedUnit.rawText.toLowerCase().includes(w.name.toLowerCase()));
-    return equipped.length > 0 ? equipped : weapons;
+    
+    const hasAnyWeaponListed = allWeapons.some(w => parsedUnit.rawText.toLowerCase().includes(w.name.toLowerCase()));
+    
+    if (hasAnyWeaponListed) {
+       return weapons.filter(w => parsedUnit.rawText.toLowerCase().includes(w.name.toLowerCase()));
+    }
+    
+    return weapons;
   };
 
   const rangedWeapons = filterWeapons(unitData.rangedWeapons);
