@@ -335,6 +335,23 @@ function App() {
       .catch(err => console.error("Could not load custom_rules.txt", err));
   }, []);
 
+  useEffect(() => {
+    if (parsedUnits.length > 0 && rosterText) {
+      const catFileName = guessCatFileName(rosterText);
+      if (catFileName) {
+        setIsLoading(true);
+        fetchFactionData(catFileName)
+          .then(dbResult => {
+            setDatabase(dbResult.units);
+            setDetachmentsDB(dbResult.detachments);
+            setCoreRules(dbResult.coreRules || []);
+          })
+          .catch(err => setError("Failed to load database from GitHub on restore: " + err.message))
+          .finally(() => setIsLoading(false));
+      }
+    }
+  }, []); // Run once on mount to restore database
+
   const handleParse = async () => {
     const { meta, units } = parseRoster(rosterText);
     setParsedUnits(units);
