@@ -848,7 +848,7 @@ function App() {
                                       <button className="font-semibold text-slate-200 hover:text-blue-400 hover:underline text-left flex items-center gap-1.5 w-full min-w-0" onClick={() => { setSelectedUnitId(unit.id); setMobileTab('checklist'); }}>
                                         <span className="truncate">{unit.name}</span>
                                         {unit.isWarlord && <span className="text-[10px] font-bold text-amber-500 border border-amber-500/50 rounded px-1 shrink-0">WARLORD</span>}
-                                        {coLeaders.length > 0 && <span className="text-[10px] font-bold text-blue-400 border border-blue-400/50 rounded px-1 shrink-0">LEADER</span>}
+                                        {attachedBodyguard && <span className="text-[10px] font-bold text-blue-400 border border-blue-400/50 rounded px-1 shrink-0">LEADER</span>}
                                       </button>
                                       <div className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1.5">
                                         <span>{unit.modelCount} model{unit.modelCount !== 1 ? 's' : ''}</span>
