@@ -446,6 +446,24 @@ function App() {
     if (!destination) return;
     if (source.index === destination.index) return;
 
+    // Enforce category boundaries
+    let sourceCategory = '';
+    for (let i = source.index; i >= 0; i--) {
+        const u = parsedUnits.find(u => u.id === orderedUnitIds[i]);
+        if (u?.isDivider) { sourceCategory = u.name; break; }
+    }
+    
+    let destCategory = '';
+    for (let i = destination.index; i >= 0; i--) {
+        const u = parsedUnits.find(u => u.id === orderedUnitIds[i]);
+        if (u?.isDivider) { destCategory = u.name; break; }
+    }
+    
+    // If the user drags a unit outside its category, snap it back (do nothing)
+    if (sourceCategory && destCategory && sourceCategory !== destCategory) {
+        return;
+    }
+
     setOrderedUnitIds(prev => {
       const newIds = Array.from(prev);
       const [removed] = newIds.splice(source.index, 1);
@@ -463,6 +481,27 @@ function App() {
     setOrderedUnitIds(prev => {
        const otherLeaderAttached = Object.entries(attachments).some(([lId, bId]) => lId !== leaderId && bId === bodyguardId);
        if (!otherLeaderAttached && !prev.includes(bodyguardId)) {
+          const bodyguard = parsedUnits.find(u => u.id === bodyguardId);
+          if (bodyguard) {
+             const categoryDividerIndex = prev.findIndex(id => {
+                const u = parsedUnits.find(pu => pu.id === id);
+                return u?.isDivider && u?.name.toLowerCase() === bodyguard.category.toLowerCase();
+             });
+             
+             if (categoryDividerIndex !== -1) {
+                let nextDividerIndex = prev.findIndex((id, idx) => {
+                   if (idx <= categoryDividerIndex) return false;
+                   const u = parsedUnits.find(pu => pu.id === id);
+                   return u?.isDivider;
+                });
+                
+                if (nextDividerIndex === -1) nextDividerIndex = prev.length;
+                
+                const newIds = [...prev];
+                newIds.splice(nextDividerIndex, 0, bodyguardId);
+                return newIds;
+             }
+          }
           return [...prev, bodyguardId];
        }
        return prev;
