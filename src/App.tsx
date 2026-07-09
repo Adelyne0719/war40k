@@ -399,15 +399,28 @@ function App() {
            }
            if (isAllowed) { attachToLeaderId = draggableId; attachBodyguardId = targetId; }
         } else if (isTargetLeaderFinal && isDraggedLeaderFinal) {
-           const existingBodyguardId = attachments[targetId];
-           if (existingBodyguardId) {
-              const existingBodyguard = parsedUnits.find(u => u.id === existingBodyguardId);
-              if (existingBodyguard) {
+           const targetBodyguardId = attachments[targetId];
+           const draggedBodyguardId = attachments[draggableId];
+           
+           if (targetBodyguardId) {
+              const targetBodyguard = parsedUnits.find(u => u.id === targetBodyguardId);
+              if (targetBodyguard) {
                  isAllowed = true;
                  if (dbDragged?.allowedBodyguards && dbDragged.allowedBodyguards.length > 0) {
-                    isAllowed = dbDragged.allowedBodyguards.some(bg => existingBodyguard.name.toLowerCase().includes(bg.toLowerCase()) || bg.toLowerCase().includes(existingBodyguard.name.toLowerCase()));
+                    isAllowed = dbDragged.allowedBodyguards.some(bg => targetBodyguard.name.toLowerCase().includes(bg.toLowerCase()) || bg.toLowerCase().includes(targetBodyguard.name.toLowerCase()));
                  }
-                 if (isAllowed) { attachToLeaderId = draggableId; attachBodyguardId = existingBodyguardId; }
+                 if (isAllowed) { attachToLeaderId = draggableId; attachBodyguardId = targetBodyguardId; }
+              }
+           }
+           
+           if (!isAllowed && draggedBodyguardId) {
+              const draggedBodyguard = parsedUnits.find(u => u.id === draggedBodyguardId);
+              if (draggedBodyguard) {
+                 isAllowed = true;
+                 if (dbTarget?.allowedBodyguards && dbTarget.allowedBodyguards.length > 0) {
+                    isAllowed = dbTarget.allowedBodyguards.some(bg => draggedBodyguard.name.toLowerCase().includes(bg.toLowerCase()) || bg.toLowerCase().includes(draggedBodyguard.name.toLowerCase()));
+                 }
+                 if (isAllowed) { attachToLeaderId = targetId; attachBodyguardId = draggedBodyguardId; }
               }
            }
         }
@@ -744,13 +757,25 @@ function App() {
                                         isAllowed = dbDragged.allowedBodyguards.some(bg => targetUnit.name.toLowerCase().includes(bg.toLowerCase()) || bg.toLowerCase().includes(targetUnit.name.toLowerCase()));
                                      }
                                   } else if (isTargetLeaderFinal && isDraggedLeaderFinal) {
-                                     const existingBodyguardId = attachments[targetUnit.id];
-                                     if (existingBodyguardId) {
-                                        const existingBodyguard = parsedUnits.find(u => u.id === existingBodyguardId);
-                                        if (existingBodyguard) {
+                                     const targetBodyguardId = attachments[targetUnit.id];
+                                     const draggedBodyguardId = attachments[draggedUnit.id];
+                                     
+                                     if (targetBodyguardId) {
+                                        const targetBodyguard = parsedUnits.find(u => u.id === targetBodyguardId);
+                                        if (targetBodyguard) {
                                            isAllowed = true;
                                            if (dbDragged?.allowedBodyguards && dbDragged.allowedBodyguards.length > 0) {
-                                              isAllowed = dbDragged.allowedBodyguards.some(bg => existingBodyguard.name.toLowerCase().includes(bg.toLowerCase()) || bg.toLowerCase().includes(existingBodyguard.name.toLowerCase()));
+                                              isAllowed = dbDragged.allowedBodyguards.some(bg => targetBodyguard.name.toLowerCase().includes(bg.toLowerCase()) || bg.toLowerCase().includes(targetBodyguard.name.toLowerCase()));
+                                           }
+                                        }
+                                     }
+                                     
+                                     if (!isAllowed && draggedBodyguardId) {
+                                        const draggedBodyguard = parsedUnits.find(u => u.id === draggedBodyguardId);
+                                        if (draggedBodyguard) {
+                                           isAllowed = true;
+                                           if (dbTarget?.allowedBodyguards && dbTarget.allowedBodyguards.length > 0) {
+                                              isAllowed = dbTarget.allowedBodyguards.some(bg => draggedBodyguard.name.toLowerCase().includes(bg.toLowerCase()) || bg.toLowerCase().includes(draggedBodyguard.name.toLowerCase()));
                                            }
                                         }
                                      }
