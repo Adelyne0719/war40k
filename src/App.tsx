@@ -749,40 +749,40 @@ function App() {
                               }
 
                               return (
-                              <div ref={provided.innerRef} {...provided.draggableProps} style={provided.draggableProps.style} className={`mb-3 rounded-lg border border-slate-700 bg-slate-800/80 transition-all duration-200 ${combineStyle}`}>
+                              <div ref={provided.innerRef} {...provided.draggableProps} style={provided.draggableProps.style} className={`@container mb-3 rounded-lg border border-slate-700 bg-slate-800/80 transition-all duration-200 ${combineStyle}`}>
                                 <div className="p-3 flex items-center gap-3">
                                   <div {...provided.dragHandleProps} className="text-slate-500 hover:text-slate-300">
                                     <GripVertical className="w-5 h-5" />
                                   </div>
                                   <div className="flex-grow flex items-center justify-between pr-2">
-                                    <div className="min-w-0">
+                                    <div className="min-w-0 flex-1">
                                       <button className="font-semibold text-slate-200 hover:text-blue-400 hover:underline text-left block truncate w-full" onClick={() => { setSelectedUnitId(unit.id); setMobileTab('checklist'); }}>
                                         {unit.name}
                                       </button>
                                       <div className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1.5">
                                         <span>{unit.modelCount} model{unit.modelCount !== 1 ? 's' : ''}</span>
-                                        <span className="opacity-50 sm:hidden md:inline lg:hidden xl:inline">•</span>
-                                        <span className="font-bold text-blue-400/90 sm:hidden md:inline lg:hidden xl:inline">{unit.points} pts</span>
+                                        <span className="opacity-50 @min-[260px]:hidden">•</span>
+                                        <span className="font-bold text-blue-400/90 @min-[260px]:hidden">{unit.points} pts</span>
                                       </div>
                                     </div>
-                                    <div className="hidden sm:block md:hidden lg:block xl:hidden font-bold text-blue-400/90 shrink-0 text-sm ml-3">{unit.points} pts</div>
+                                    <div className="hidden @min-[260px]:block font-bold text-blue-400/90 shrink-0 text-sm ml-3">{unit.points} pts</div>
                                   </div>
                                 </div>
                                 {attachedBodyguard && (
                                   <div className="border-t border-slate-700 bg-slate-900/50 p-2 rounded-b-lg">
                                     <div className="flex items-center text-sm py-1 px-2 border-l-2 border-emerald-500 ml-2">
                                       <div className="flex-grow flex items-center justify-between pr-2">
-                                        <div className="min-w-0">
+                                        <div className="min-w-0 flex-1">
                                           <button className="font-semibold text-emerald-300 hover:text-emerald-400 hover:underline text-left block truncate w-full" onClick={() => { setSelectedUnitId(attachedBodyguard.id); setMobileTab('checklist'); }}>
                                             {attachedBodyguard.name}
                                           </button>
                                           <div className="text-[11px] text-emerald-500/60 mt-0.5 flex items-center gap-1.5">
                                             <span>{attachedBodyguard.modelCount} model{attachedBodyguard.modelCount !== 1 ? 's' : ''}</span>
-                                            <span className="opacity-50 sm:hidden md:inline lg:hidden xl:inline">•</span>
-                                            <span className="font-bold text-emerald-600/80 sm:hidden md:inline lg:hidden xl:inline">{attachedBodyguard.points} pts</span>
+                                            <span className="opacity-50 @min-[240px]:hidden">•</span>
+                                            <span className="font-bold text-emerald-600/80 @min-[240px]:hidden">{attachedBodyguard.points} pts</span>
                                           </div>
                                         </div>
-                                        <div className="hidden sm:block md:hidden lg:block xl:hidden font-bold text-emerald-600/80 shrink-0 text-xs ml-3">{attachedBodyguard.points} pts</div>
+                                        <div className="hidden @min-[240px]:block font-bold text-emerald-600/80 shrink-0 text-xs ml-3">{attachedBodyguard.points} pts</div>
                                       </div>
                                       <div className="flex items-center gap-3 shrink-0">
                                         <button onClick={() => handleDetach(unit.id, attachedBodyguard.id)} className="text-slate-500 hover:text-red-400 transition-colors p-1">
