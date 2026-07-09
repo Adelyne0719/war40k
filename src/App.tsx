@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { parseRoster } from './utils/rosterParser';
 import type { ParsedUnit, RosterMeta } from './utils/rosterParser';
 import { fetchFactionData, type UnitData, type DetachmentData, type Ability, determinePhase } from './utils/githubFetcher';
-import { Shield, Swords, Crosshair, Loader2, Info, GripVertical, Users, X, ShieldAlert, ChevronLeft, Menu, ChevronDown, ChevronUp, Crown } from 'lucide-react';
+import { Shield, Swords, Crosshair, Loader2, Info, GripVertical, Users, X, ShieldAlert, ChevronLeft, Menu, ChevronDown, ChevronUp } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import type { DropResult } from '@hello-pangea/dnd';
 import { UnitProfileView } from './components/UnitProfileView';
@@ -758,7 +758,7 @@ function App() {
                                     <div className="min-w-0 flex-1">
                                       <button className="font-semibold text-slate-200 hover:text-blue-400 hover:underline text-left flex items-center gap-1.5 w-full min-w-0" onClick={() => { setSelectedUnitId(unit.id); setMobileTab('checklist'); }}>
                                         <span className="truncate">{unit.name}</span>
-                                        {unit.isWarlord && <Crown className="w-3.5 h-3.5 text-amber-400 shrink-0 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]" />}
+                                        {unit.isWarlord && <span className="text-[10px] font-bold text-amber-500 border border-amber-500/50 rounded px-1 shrink-0">WARLORD</span>}
                                       </button>
                                       <div className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1.5">
                                         <span>{unit.modelCount} model{unit.modelCount !== 1 ? 's' : ''}</span>
@@ -776,7 +776,7 @@ function App() {
                                         <div className="min-w-0 flex-1">
                                           <button className="font-semibold text-emerald-300 hover:text-emerald-400 hover:underline text-left flex items-center gap-1.5 w-full min-w-0" onClick={() => { setSelectedUnitId(attachedBodyguard.id); setMobileTab('checklist'); }}>
                                             <span className="truncate">{attachedBodyguard.name}</span>
-                                            {attachedBodyguard.isWarlord && <Crown className="w-3.5 h-3.5 text-amber-400 shrink-0 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]" />}
+                                            {attachedBodyguard.isWarlord && <span className="text-[10px] font-bold text-amber-500 border border-amber-500/50 rounded px-1 shrink-0">WARLORD</span>}
                                           </button>
                                           <div className="text-[11px] text-emerald-500/60 mt-0.5 flex items-center gap-1.5">
                                             <span>{attachedBodyguard.modelCount} model{attachedBodyguard.modelCount !== 1 ? 's' : ''}</span>
