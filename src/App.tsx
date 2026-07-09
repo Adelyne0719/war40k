@@ -370,9 +370,9 @@ function App() {
       const targetUnit = parsedUnits.find(u => u.id === targetId);
       
       if (draggedUnit && targetUnit) {
-        const isDraggedLeader = draggedUnit.category.includes('Character') || draggedUnit.category.includes('Epic Hero');
-        const isDraggedBodyguard = !isDraggedLeader && !draggedUnit.category.includes('Vehicle') && !draggedUnit.category.includes('Monster');
-        const isTargetLeader = targetUnit.category.includes('Character') || targetUnit.category.includes('Epic Hero');
+        const isDraggedLeader = draggedUnit.category.toLowerCase().includes('character') || draggedUnit.category.toLowerCase().includes('epic hero');
+        const isDraggedBodyguard = !isDraggedLeader && !draggedUnit.category.toLowerCase().includes('vehicle') && !draggedUnit.category.toLowerCase().includes('monster');
+        const isTargetLeader = targetUnit.category.toLowerCase().includes('character') || targetUnit.category.toLowerCase().includes('epic hero');
         
         let isAllowedByLeader = true;
         const dbLeader = database.find(d => d.name.toLowerCase() === targetUnit.name.toLowerCase() || targetUnit.name.toLowerCase().includes(d.name.toLowerCase()));
@@ -709,9 +709,9 @@ function App() {
                                 
                                 let isAllowed = false;
                                 if (draggedUnit && targetUnit) {
-                                  const isDraggedLeader = draggedUnit.category.includes('Character') || draggedUnit.category.includes('Epic Hero');
-                                  const isDraggedBodyguard = !isDraggedLeader && !draggedUnit.category.includes('Vehicle') && !draggedUnit.category.includes('Monster');
-                                  const isTargetLeader = targetUnit.category.includes('Character') || targetUnit.category.includes('Epic Hero');
+                                  const isDraggedLeader = draggedUnit.category.toLowerCase().includes('character') || draggedUnit.category.toLowerCase().includes('epic hero');
+                                  const isDraggedBodyguard = !isDraggedLeader && !draggedUnit.category.toLowerCase().includes('vehicle') && !draggedUnit.category.toLowerCase().includes('monster');
+                                  const isTargetLeader = targetUnit.category.toLowerCase().includes('character') || targetUnit.category.toLowerCase().includes('epic hero');
                                   
                                   const dbLeader = database.find(d => d.name.toLowerCase() === targetUnit.name.toLowerCase() || targetUnit.name.toLowerCase().includes(d.name.toLowerCase()));
                                   let isAllowedByLeader = true;
