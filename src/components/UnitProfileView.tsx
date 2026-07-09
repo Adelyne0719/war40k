@@ -20,9 +20,21 @@ export function UnitProfileView({ unitData, parsedUnit, detachmentsDB, onBack }:
        const wName = w.name.toLowerCase();
        const rText = parsedUnit.rawText.toLowerCase();
        const cleanWName = wName.replace(/\s*\(.*?\)\s*/g, '').trim();
+       if (rText.includes(cleanWName)) return true;
+
        const noHyphenWName = cleanWName.replace(/-/g, ' ');
        const noHyphenRText = rText.replace(/-/g, ' ');
-       return rText.includes(cleanWName) || noHyphenRText.includes(noHyphenWName);
+       if (noHyphenRText.includes(noHyphenWName)) return true;
+
+       if (wName.includes(' - ') || wName.includes(' – ')) {
+           const baseName = wName.split(/\s[-–]\s/)[0].trim();
+           const cleanBaseName = baseName.replace(/\s*\(.*?\)\s*/g, '').trim();
+           if (cleanBaseName.length > 3 && rText.includes(cleanBaseName)) {
+               return true;
+           }
+       }
+       
+       return false;
     });
     
     // If roster text has loadout details (contains ':' or newlines), be strict.
