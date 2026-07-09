@@ -1,15 +1,16 @@
 import { Swords, Crosshair, ArrowLeft, Zap } from 'lucide-react';
-import type { UnitData } from '../utils/githubFetcher';
+import type { UnitData, DetachmentData } from '../utils/githubFetcher';
 import { FormattedDescription } from './FormattedDescription';
 import type { ParsedUnit } from '../utils/rosterParser';
 
 interface UnitProfileViewProps {
   unitData: UnitData;
   parsedUnit: ParsedUnit;
+  detachmentsDB?: DetachmentData[];
   onBack: () => void;
 }
 
-export function UnitProfileView({ unitData, parsedUnit, onBack }: UnitProfileViewProps) {
+export function UnitProfileView({ unitData, parsedUnit, detachmentsDB, onBack }: UnitProfileViewProps) {
   const { stats, abilities, keywords } = unitData;
 
   const filterWeapons = (weapons: any[]) => {
@@ -161,6 +162,38 @@ export function UnitProfileView({ unitData, parsedUnit, onBack }: UnitProfileVie
             ))}
           </div>
         )}
+
+        {/* Enhancements */}
+        {(() => {
+          if (!detachmentsDB) return null;
+          // Filter out generic short names to avoid false positives, only look for likely enhancements
+          const enhancements = detachmentsDB.flatMap(d => d.rules).filter(r => {
+             const rName = r.name.toLowerCase();
+             if (['leader', 'invulnerable save', 'stealth', 'fights first', 'deep strike', 'lone operative', 'scouts', 'infiltrators', 'feel no pain', 'deadly demise'].includes(rName)) return false;
+             if (rName.length < 5) return false;
+             return parsedUnit.rawText.toLowerCase().includes(rName);
+          });
+
+          if (enhancements.length === 0) return null;
+
+          // Remove duplicates if multiple detachments have the same enhancement name somehow
+          const uniqueEnhancements = enhancements.filter((e, idx, self) => idx === self.findIndex(t => t.name === e.name));
+
+          return (
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 mb-2">
+                <Zap className="w-4 h-4 text-amber-400" />
+                <h3 className="font-bold text-slate-200 text-sm uppercase tracking-wide">Enhancements & Special Rules</h3>
+              </div>
+              {uniqueEnhancements.map((enh, idx) => (
+                <div key={idx} className="bg-amber-900/20 p-3 rounded-lg border border-amber-700/50">
+                  <h4 className="font-bold text-amber-400 text-sm mb-1">{enh.name}</h4>
+                  <FormattedDescription text={enh.description} className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap" />
+                </div>
+              ))}
+            </div>
+          );
+        })()}
 
         {/* Keywords */}
         {keywords.length > 0 && (

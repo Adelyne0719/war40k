@@ -1013,7 +1013,7 @@ function App() {
                  return (
                     <div className="flex flex-col xl:flex-row h-full w-full gap-4 xl:gap-6 overflow-y-auto xl:overflow-hidden custom-scrollbar">
                        <div className="w-full xl:w-1/2 h-auto xl:h-full xl:overflow-y-auto custom-scrollbar xl:pr-2 pb-4 xl:pb-0 border-b xl:border-b-0 xl:border-r border-slate-700/50 flex-shrink-0">
-                          <UnitProfileView unitData={dbUnit} parsedUnit={unit} onBack={() => setSelectedUnitId(null)} />
+                          <UnitProfileView unitData={dbUnit} parsedUnit={unit} detachmentsDB={detachmentsDB} onBack={() => setSelectedUnitId(null)} />
                        </div>
                        
                        <div className="w-full xl:w-1/2 h-auto xl:h-full flex flex-col pt-2 xl:pt-0">
