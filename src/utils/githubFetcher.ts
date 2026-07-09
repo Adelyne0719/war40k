@@ -403,6 +403,7 @@ export async function fetchFactionData(factionFileName: string): Promise<Faction
              }
              if (se.selectionEntries) extractFromEntries(se.selectionEntries);
              if (se.selectionEntryGroups) extractFromGroups(se.selectionEntryGroups);
+             if (se.entryLinks) extractFromLinks(se.entryLinks);
          }
      };
      
@@ -410,6 +411,27 @@ export async function fetchFactionData(factionFileName: string): Promise<Faction
          for (const g of groups) {
              if (g.selectionEntries) extractFromEntries(g.selectionEntries);
              if (g.selectionEntryGroups) extractFromGroups(g.selectionEntryGroups);
+             if (g.entryLinks) extractFromLinks(g.entryLinks);
+         }
+     };
+
+     const extractFromLinks = (links: any[]) => {
+         for (const l of links) {
+             if (l.profiles) {
+                 for (const p of l.profiles) {
+                     if (p.typeName === 'Abilities' || p.typeName === 'Ability' || p.typeName === 'Enhancement') {
+                         const desc = getChar(p, 'Description');
+                         if (desc) {
+                             if (!allEnhancements.some(e => e.name === (p.name || l.name))) {
+                                 allEnhancements.push({ name: p.name || l.name, description: desc, phase: determinePhase(desc) });
+                             }
+                         }
+                     }
+                 }
+             }
+             if (l.selectionEntries) extractFromEntries(l.selectionEntries);
+             if (l.selectionEntryGroups) extractFromGroups(l.selectionEntryGroups);
+             if (l.entryLinks) extractFromLinks(l.entryLinks);
          }
      };
 
