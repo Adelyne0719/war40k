@@ -386,9 +386,10 @@ export async function fetchFactionData(factionFileName: string): Promise<Faction
   const allEnhancements: Ability[] = [];
   
   for (const doc of allDocs) {
-     const extractFromEntries = (entries: any[]) => {
+     const extractFromEntries = (entries: any[], isEnhTree: boolean) => {
          for (const se of entries) {
-             if (se.profiles) {
+             const currentIsEnhTree = isEnhTree || (se.name && se.name.toLowerCase().includes('enhancement'));
+             if (currentIsEnhTree && se.profiles) {
                  for (const p of se.profiles) {
                      if (p.typeName === 'Abilities' || p.typeName === 'Ability' || p.typeName === 'Enhancement') {
                          const desc = getChar(p, 'Description');
@@ -401,23 +402,25 @@ export async function fetchFactionData(factionFileName: string): Promise<Faction
                      }
                  }
              }
-             if (se.selectionEntries) extractFromEntries(se.selectionEntries);
-             if (se.selectionEntryGroups) extractFromGroups(se.selectionEntryGroups);
-             if (se.entryLinks) extractFromLinks(se.entryLinks);
+             if (se.selectionEntries) extractFromEntries(se.selectionEntries, currentIsEnhTree);
+             if (se.selectionEntryGroups) extractFromGroups(se.selectionEntryGroups, currentIsEnhTree);
+             if (se.entryLinks) extractFromLinks(se.entryLinks, currentIsEnhTree);
          }
      };
      
-     const extractFromGroups = (groups: any[]) => {
+     const extractFromGroups = (groups: any[], isEnhTree: boolean) => {
          for (const g of groups) {
-             if (g.selectionEntries) extractFromEntries(g.selectionEntries);
-             if (g.selectionEntryGroups) extractFromGroups(g.selectionEntryGroups);
-             if (g.entryLinks) extractFromLinks(g.entryLinks);
+             const currentIsEnhTree = isEnhTree || (g.name && g.name.toLowerCase().includes('enhancement'));
+             if (g.selectionEntries) extractFromEntries(g.selectionEntries, currentIsEnhTree);
+             if (g.selectionEntryGroups) extractFromGroups(g.selectionEntryGroups, currentIsEnhTree);
+             if (g.entryLinks) extractFromLinks(g.entryLinks, currentIsEnhTree);
          }
      };
 
-     const extractFromLinks = (links: any[]) => {
+     const extractFromLinks = (links: any[], isEnhTree: boolean) => {
          for (const l of links) {
-             if (l.profiles) {
+             const currentIsEnhTree = isEnhTree || (l.name && l.name.toLowerCase().includes('enhancement'));
+             if (currentIsEnhTree && l.profiles) {
                  for (const p of l.profiles) {
                      if (p.typeName === 'Abilities' || p.typeName === 'Ability' || p.typeName === 'Enhancement') {
                          const desc = getChar(p, 'Description');
@@ -429,14 +432,14 @@ export async function fetchFactionData(factionFileName: string): Promise<Faction
                      }
                  }
              }
-             if (l.selectionEntries) extractFromEntries(l.selectionEntries);
-             if (l.selectionEntryGroups) extractFromGroups(l.selectionEntryGroups);
-             if (l.entryLinks) extractFromLinks(l.entryLinks);
+             if (l.selectionEntries) extractFromEntries(l.selectionEntries, currentIsEnhTree);
+             if (l.selectionEntryGroups) extractFromGroups(l.selectionEntryGroups, currentIsEnhTree);
+             if (l.entryLinks) extractFromLinks(l.entryLinks, currentIsEnhTree);
          }
      };
 
-     extractFromEntries(doc.catalogue?.sharedSelectionEntries || []);
-     extractFromGroups(doc.catalogue?.sharedSelectionEntryGroups || []);
+     extractFromEntries(doc.catalogue?.sharedSelectionEntries || [], false);
+     extractFromGroups(doc.catalogue?.sharedSelectionEntryGroups || [], false);
   }
   
   if (allEnhancements.length > 0) {
