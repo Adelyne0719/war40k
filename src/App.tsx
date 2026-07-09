@@ -413,6 +413,21 @@ function App() {
                  }
              }
           }
+        } else if (isDraggedLeader && !isTargetLeader && !targetUnit.category.toLowerCase().includes('vehicle') && !targetUnit.category.toLowerCase().includes('monster')) {
+           const dbDraggedLeader = database.find(d => d.name.toLowerCase() === draggedUnit.name.toLowerCase() || draggedUnit.name.toLowerCase().includes(d.name.toLowerCase()));
+           let isDraggedLeaderAllowed = true;
+           if (dbDraggedLeader?.allowedBodyguards && dbDraggedLeader.allowedBodyguards.length > 0) {
+               isDraggedLeaderAllowed = dbDraggedLeader.allowedBodyguards.some(bg => 
+                   targetUnit.name.toLowerCase().includes(bg.toLowerCase()) || bg.toLowerCase().includes(targetUnit.name.toLowerCase())
+               );
+           }
+           if (isDraggedLeaderAllowed) {
+              setAttachments(prev => ({ ...prev, [draggableId]: targetId }));
+              setOrderedUnitIds(prev => {
+                 let newIds = prev.filter(id => id !== targetId);
+                 return newIds;
+              });
+           }
         }
       }
       return;
@@ -738,6 +753,15 @@ function App() {
                                           if (isDraggedAllowed) isAllowed = true;
                                       }
                                     }
+                                  } else if (isDraggedLeader && !isTargetLeader && !targetUnit.category.toLowerCase().includes('vehicle') && !targetUnit.category.toLowerCase().includes('monster')) {
+                                      const dbDraggedLeader = database.find(d => d.name.toLowerCase() === draggedUnit.name.toLowerCase() || draggedUnit.name.toLowerCase().includes(d.name.toLowerCase()));
+                                      let isDraggedLeaderAllowed = true;
+                                      if (dbDraggedLeader?.allowedBodyguards && dbDraggedLeader.allowedBodyguards.length > 0) {
+                                          isDraggedLeaderAllowed = dbDraggedLeader.allowedBodyguards.some(bg => 
+                                              targetUnit.name.toLowerCase().includes(bg.toLowerCase()) || bg.toLowerCase().includes(targetUnit.name.toLowerCase())
+                                          );
+                                      }
+                                      if (isDraggedLeaderAllowed) isAllowed = true;
                                   }
                                 }
                           
