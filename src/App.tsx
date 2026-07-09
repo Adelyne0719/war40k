@@ -447,13 +447,35 @@ function App() {
            const oldBodyguardId = attachments[attachToLeaderId];
            setAttachments(prev => ({ ...prev, [attachToLeaderId]: attachBodyguardId }));
            setOrderedUnitIds(prev => {
-             let newIds = prev.filter(id => id !== attachBodyguardId);
+             let newIds = Array.from(prev);
+             const leaderIndex = newIds.indexOf(attachToLeaderId);
+             const bodyguardIndex = newIds.indexOf(attachBodyguardId);
+             const targetIndex = Math.min(leaderIndex, bodyguardIndex);
+
+             newIds = newIds.filter(id => id !== attachBodyguardId && id !== attachToLeaderId);
+
              if (oldBodyguardId && oldBodyguardId !== attachBodyguardId) {
                const otherLeaderAttached = Object.entries(attachments).some(([lId, bId]) => lId !== attachToLeaderId && bId === oldBodyguardId);
                if (!otherLeaderAttached && !newIds.includes(oldBodyguardId)) {
-                 newIds.push(oldBodyguardId);
+                 const oldBodyguard = parsedUnits.find(u => u.id === oldBodyguardId);
+                 if (oldBodyguard) {
+                    let insertIndex = newIds.length;
+                    let foundCategory = false;
+                    for (let i = 0; i < newIds.length; i++) {
+                       const u = parsedUnits.find(unit => unit.id === newIds[i]);
+                       if (u?.isDivider) {
+                          if (foundCategory) { insertIndex = i; break; }
+                          if (u.name === oldBodyguard.category) { foundCategory = true; }
+                       }
+                    }
+                    newIds.splice(insertIndex, 0, oldBodyguardId);
+                 } else {
+                    newIds.push(oldBodyguardId);
+                 }
                }
              }
+
+             newIds.splice(targetIndex, 0, attachToLeaderId);
              return newIds;
            });
         }
