@@ -714,6 +714,15 @@ function App() {
                       {orderedUnitIds.map((id, index) => {
                         const unit = parsedUnits.find(u => u.id === id)!;
                         const attachedBodyguardId = attachments[id];
+                        
+                        let coLeaders: any[] = [];
+                        if (attachedBodyguardId) {
+                           const allLeaders = Object.entries(attachments).filter(([_, bId]) => bId === attachedBodyguardId).map(([lId]) => lId);
+                           const primaryLeaderId = orderedUnitIds.find(oId => allLeaders.includes(oId));
+                           if (primaryLeaderId !== id) return null;
+                           coLeaders = allLeaders.filter(lId => lId !== id).map(lId => parsedUnits.find(u => u.id === lId)).filter(Boolean);
+                        }
+                        
                         const attachedBodyguard = attachedBodyguardId ? parsedUnits.find(u => u.id === attachedBodyguardId) : null;
 
                         return (
@@ -800,6 +809,7 @@ function App() {
                                       <button className="font-semibold text-slate-200 hover:text-blue-400 hover:underline text-left flex items-center gap-1.5 w-full min-w-0" onClick={() => { setSelectedUnitId(unit.id); setMobileTab('checklist'); }}>
                                         <span className="truncate">{unit.name}</span>
                                         {unit.isWarlord && <span className="text-[10px] font-bold text-amber-500 border border-amber-500/50 rounded px-1 shrink-0">WARLORD</span>}
+                                        {coLeaders.length > 0 && <span className="text-[10px] font-bold text-blue-400 border border-blue-400/50 rounded px-1 shrink-0">LEADER</span>}
                                       </button>
                                       <div className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1.5">
                                         <span>{unit.modelCount} model{unit.modelCount !== 1 ? 's' : ''}</span>
@@ -810,6 +820,32 @@ function App() {
                                     <div className="hidden @min-[260px]:block font-bold text-blue-400/90 shrink-0 text-sm ml-3">{unit.points} pts</div>
                                   </div>
                                 </div>
+                                {coLeaders.map(coLeader => (
+                                  <div key={coLeader.id} className="border-t border-slate-700 bg-slate-900/40 p-2">
+                                    <div className="flex items-center text-sm py-1 px-2 border-l-2 border-blue-500/50 ml-2">
+                                      <div className="flex-grow flex items-center justify-between pr-2">
+                                        <div className="min-w-0 flex-1">
+                                          <button className="font-semibold text-blue-300 hover:text-blue-400 hover:underline text-left flex items-center gap-1.5 w-full min-w-0" onClick={() => { setSelectedUnitId(coLeader.id); setMobileTab('checklist'); }}>
+                                            <span className="truncate">{coLeader.name}</span>
+                                            {coLeader.isWarlord && <span className="text-[10px] font-bold text-amber-500 border border-amber-500/50 rounded px-1 shrink-0">WARLORD</span>}
+                                            <span className="text-[10px] font-bold text-purple-400 border border-purple-400/50 rounded px-1 shrink-0">MULTI-LEADER</span>
+                                          </button>
+                                          <div className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1.5">
+                                            <span>{coLeader.modelCount} model{coLeader.modelCount !== 1 ? 's' : ''}</span>
+                                            <span className="opacity-50 @min-[260px]:hidden">•</span>
+                                            <span className="font-bold text-blue-400/90 @min-[260px]:hidden">{coLeader.points} pts</span>
+                                          </div>
+                                        </div>
+                                        <div className="hidden @min-[260px]:block font-bold text-blue-400/90 shrink-0 text-xs ml-3">{coLeader.points} pts</div>
+                                      </div>
+                                      <div className="flex items-center gap-3 shrink-0">
+                                        <button onClick={() => handleDetach(coLeader.id, attachedBodyguard!.id)} className="text-slate-500 hover:text-red-400 transition-colors p-1">
+                                          <X className="w-4 h-4" />
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
                                 {attachedBodyguard && (
                                   <div className="border-t border-slate-700 bg-slate-900/50 p-2 rounded-b-lg">
                                     <div className="flex items-center text-sm py-1 px-2 border-l-2 border-emerald-500 ml-2">
