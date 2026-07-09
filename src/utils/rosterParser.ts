@@ -30,7 +30,7 @@ export function parseRoster(rosterText: string): ParseResult {
   let currentUnit: ParsedUnit | null = null;
   
   // Matches "Unit Name [100 pts]:" or "Unit Name [100 pts]"
-  const unitRegex = /^([a-zA-Z0-9\s\-&]+?)\s*\[(\d+)\s*pts\]:?/;
+  const unitRegex = /^(.+?)\s*\[(\d+)\s*pts\]:?/;
   const categoryRegex = /^##\s+(.+)\s+\[/;
   const modelCountRegex = /^•\s+(\d+)x\s+/;
 
