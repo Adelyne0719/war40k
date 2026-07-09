@@ -83,19 +83,20 @@ export function parseRoster(rosterText: string): ParseResult {
       // If it's a new unit, save the previous one if it exists
       currentUnit = {
         id: name + '-' + Math.random().toString(36).substr(2, 9), // Unique ID for DnD
-        name: name,
+        name: name.replace(/\[?Warlord\]?/i, '').trim(),
         points: parseInt(match[2], 10),
         category: currentCategory,
         modelCount: 0, // We will count this in the following lines
         rawText: trimmed,
-        isDivider: KNOWN_CATEGORIES.includes(name.toLowerCase())
+        isDivider: KNOWN_CATEGORIES.includes(name.toLowerCase()),
+        isWarlord: trimmed.toLowerCase().includes('warlord')
       };
       units.push(currentUnit);
       continue;
     }
 
-    // Check for Warlord
-    if (currentUnit && (trimmed.includes('Warlord') || trimmed.includes('[Warlord]'))) {
+    // Check for Warlord on subsequent lines
+    if (currentUnit && trimmed.toLowerCase().includes('warlord')) {
       currentUnit.isWarlord = true;
     }
 
