@@ -370,7 +370,8 @@ function App() {
       const targetUnit = parsedUnits.find(u => u.id === targetId);
       
       if (draggedUnit && targetUnit) {
-        const isDraggedBodyguard = !draggedUnit.category.includes('Character') && !draggedUnit.category.includes('Epic Hero') && !draggedUnit.category.includes('Vehicle') && !draggedUnit.category.includes('Monster');
+        const isDraggedLeader = draggedUnit.category.includes('Character') || draggedUnit.category.includes('Epic Hero');
+        const isDraggedBodyguard = !isDraggedLeader && !draggedUnit.category.includes('Vehicle') && !draggedUnit.category.includes('Monster');
         const isTargetLeader = targetUnit.category.includes('Character') || targetUnit.category.includes('Epic Hero');
         
         let isAllowedByLeader = true;
@@ -387,10 +388,31 @@ function App() {
           setOrderedUnitIds(prev => {
             let newIds = prev.filter(id => id !== draggableId);
             if (oldBodyguardId && oldBodyguardId !== draggableId) {
-              newIds.push(oldBodyguardId);
+              const otherLeaderAttached = Object.entries(attachments).some(([lId, bId]) => lId !== targetId && bId === oldBodyguardId);
+              if (!otherLeaderAttached && !newIds.includes(oldBodyguardId)) {
+                newIds.push(oldBodyguardId);
+              }
             }
             return newIds;
           });
+        } else if (isDraggedLeader && isTargetLeader) {
+          const existingBodyguardId = attachments[targetId];
+          if (existingBodyguardId) {
+             const existingBodyguard = parsedUnits.find(u => u.id === existingBodyguardId);
+             if (existingBodyguard) {
+                 let isDraggedAllowed = true;
+                 const dbDraggedLeader = database.find(d => d.name.toLowerCase() === draggedUnit.name.toLowerCase() || draggedUnit.name.toLowerCase().includes(d.name.toLowerCase()));
+                 if (dbDraggedLeader?.allowedBodyguards && dbDraggedLeader.allowedBodyguards.length > 0) {
+                     isDraggedAllowed = dbDraggedLeader.allowedBodyguards.some(bg => 
+                         existingBodyguard.name.toLowerCase().includes(bg.toLowerCase()) || bg.toLowerCase().includes(existingBodyguard.name.toLowerCase())
+                     );
+                 }
+                 
+                 if (isDraggedAllowed) {
+                    setAttachments(prev => ({ ...prev, [draggableId]: existingBodyguardId }));
+                 }
+             }
+          }
         }
       }
       return;
@@ -413,7 +435,13 @@ function App() {
       delete newAtt[leaderId];
       return newAtt;
     });
-    setOrderedUnitIds(prev => [...prev, bodyguardId]);
+    setOrderedUnitIds(prev => {
+       const otherLeaderAttached = Object.entries(attachments).some(([lId, bId]) => lId !== leaderId && bId === bodyguardId);
+       if (!otherLeaderAttached && !prev.includes(bodyguardId)) {
+          return [...prev, bodyguardId];
+       }
+       return prev;
+    });
   };
 
   const checklists: Record<string, any[]> = {};
@@ -673,7 +701,8 @@ function App() {
                                 
                                 let isAllowed = false;
                                 if (draggedUnit && targetUnit) {
-                                  const isDraggedBodyguard = !draggedUnit.category.includes('Character') && !draggedUnit.category.includes('Epic Hero') && !draggedUnit.category.includes('Vehicle') && !draggedUnit.category.includes('Monster');
+                                  const isDraggedLeader = draggedUnit.category.includes('Character') || draggedUnit.category.includes('Epic Hero');
+                                  const isDraggedBodyguard = !isDraggedLeader && !draggedUnit.category.includes('Vehicle') && !draggedUnit.category.includes('Monster');
                                   const isTargetLeader = targetUnit.category.includes('Character') || targetUnit.category.includes('Epic Hero');
                                   
                                   const dbLeader = database.find(d => d.name.toLowerCase() === targetUnit.name.toLowerCase() || targetUnit.name.toLowerCase().includes(d.name.toLowerCase()));
@@ -686,6 +715,21 @@ function App() {
                           
                                   if (isDraggedBodyguard && isTargetLeader && isAllowedByLeader) {
                                     isAllowed = true;
+                                  } else if (isDraggedLeader && isTargetLeader) {
+                                    const existingBodyguardId = attachments[targetUnit.id];
+                                    if (existingBodyguardId) {
+                                      const existingBodyguard = parsedUnits.find(u => u.id === existingBodyguardId);
+                                      if (existingBodyguard) {
+                                          let isDraggedAllowed = true;
+                                          const dbDraggedLeader = database.find(d => d.name.toLowerCase() === draggedUnit.name.toLowerCase() || draggedUnit.name.toLowerCase().includes(d.name.toLowerCase()));
+                                          if (dbDraggedLeader?.allowedBodyguards && dbDraggedLeader.allowedBodyguards.length > 0) {
+                                              isDraggedAllowed = dbDraggedLeader.allowedBodyguards.some(bg => 
+                                                  existingBodyguard.name.toLowerCase().includes(bg.toLowerCase()) || bg.toLowerCase().includes(existingBodyguard.name.toLowerCase())
+                                              );
+                                          }
+                                          if (isDraggedAllowed) isAllowed = true;
+                                      }
+                                    }
                                   }
                                 }
                           
