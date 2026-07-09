@@ -1,5 +1,6 @@
 import { Swords, Crosshair, ArrowLeft, Zap } from 'lucide-react';
 import type { UnitData } from '../utils/githubFetcher';
+import { FormattedDescription } from './FormattedDescription';
 import type { ParsedUnit } from '../utils/rosterParser';
 
 interface UnitProfileViewProps {
@@ -155,7 +156,7 @@ export function UnitProfileView({ unitData, parsedUnit, onBack }: UnitProfileVie
             {abilities.map((ab, idx) => (
               <div key={idx} className="bg-slate-800/40 p-3 rounded-lg border border-slate-700">
                 <h4 className="font-bold text-slate-200 text-sm mb-1">{ab.name}</h4>
-                <p className="text-sm text-slate-400 leading-relaxed whitespace-pre-wrap">{ab.description}</p>
+                <FormattedDescription text={ab.description} className="text-sm text-slate-400 leading-relaxed whitespace-pre-wrap" />
               </div>
             ))}
           </div>

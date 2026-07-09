@@ -3,6 +3,7 @@ import { parseRoster } from './utils/rosterParser';
 import type { ParsedUnit, RosterMeta } from './utils/rosterParser';
 import { fetchFactionData, type UnitData, type DetachmentData, type Ability, determinePhase } from './utils/githubFetcher';
 import { Shield, Swords, Crosshair, Loader2, Info, GripVertical, Users, X, ShieldAlert, ChevronLeft, Menu, ChevronDown, ChevronUp } from 'lucide-react';
+import { FormattedDescription } from './components/FormattedDescription';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import type { DropResult } from '@hello-pangea/dnd';
 import { UnitProfileView } from './components/UnitProfileView';
@@ -186,7 +187,7 @@ function PhaseChecklistTable({ checklists, filterUnitIds }: { checklists: Record
                    </span>
                    <span className="text-slate-600 mx-1.5">—</span>
                    <span className="text-slate-300 font-semibold">{item.unit.name.replace('Detachment: ', '')}</span>
-                   <p className="text-xs xl:text-sm text-slate-400 whitespace-pre-line mt-1.5 leading-relaxed">{item.ability.description}</p>
+                   <FormattedDescription text={item.ability.description} className="text-xs xl:text-sm text-slate-400 whitespace-pre-line mt-1.5 leading-relaxed" />
                 </div>
              </div>
            );

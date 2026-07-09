@@ -1,5 +1,6 @@
 import { Shield, ArrowLeft } from 'lucide-react';
 import type { DetachmentData } from '../utils/githubFetcher';
+import { FormattedDescription } from './FormattedDescription';
 
 interface DetachmentProfileViewProps {
   detachment: DetachmentData;
@@ -34,7 +35,7 @@ export function DetachmentProfileView({ detachment, onBack }: DetachmentProfileV
               {detachment.rules.map((rule, idx) => (
                 <div key={idx} className="bg-slate-900/50 border border-slate-700 rounded-lg p-3 xl:p-4">
                   <div className="font-bold text-emerald-400 mb-2">{rule.name}</div>
-                  <div className="text-xs xl:text-sm text-slate-300 whitespace-pre-wrap leading-relaxed">{rule.description}</div>
+                  <FormattedDescription text={rule.description} className="text-xs xl:text-sm text-slate-300 whitespace-pre-wrap leading-relaxed" />
                 </div>
               ))}
             </div>
@@ -53,7 +54,7 @@ export function DetachmentProfileView({ detachment, onBack }: DetachmentProfileV
                 <div key={idx} className="bg-blue-900/10 border border-blue-900/50 rounded-lg p-3 xl:p-4">
                   <div className="font-bold text-blue-400 mb-1">{strat.name}</div>
                   <div className="text-[10px] xl:text-xs text-blue-300/70 mb-2 uppercase tracking-wider">{strat.phase}</div>
-                  <div className="text-xs xl:text-sm text-slate-300 whitespace-pre-wrap leading-relaxed">{strat.description}</div>
+                  <FormattedDescription text={strat.description} className="text-xs xl:text-sm text-slate-300 whitespace-pre-wrap leading-relaxed" />
                 </div>
               ))}
             </div>
