@@ -73,11 +73,13 @@ export function determinePhase(desc: string): string {
   const dClean = fullText.replace(/in a turn in which it advanced/gi, '');
   const d = dClean;
   
+  const isDestroyed = d.includes('is destroyed') || d.includes('would be destroyed');
+  
   if (d.includes('command phase')) phases.push('Command Phase');
-  if (d.includes('movement phase') || d.includes('advance') || d.includes('fall back') || d.includes('normal move') || d.includes('set up') || d.includes('arrives from reserves')) phases.push('Movement Phase');
-  if (d.includes('shooting phase') || d.includes('ranged attack') || d.includes('shoot') || d.includes('firing')) phases.push('Shooting Phase');
+  if (d.includes('movement phase') || d.includes('advance') || d.includes('fall back') || d.includes('normal move') || (!isDestroyed && d.includes('set up')) || d.includes('arrives from reserves')) phases.push('Movement Phase');
+  if (d.includes('shooting phase') || d.includes('ranged attack') || d.includes('shoot') || d.includes('firing') || isDestroyed) phases.push('Shooting Phase');
   if (d.includes('charge phase') || d.includes('charge roll') || d.includes('charge')) phases.push('Charge Phase');
-  if (d.includes('fight phase') || d.includes('melee attack') || d.includes('fight')) phases.push('Fight Phase');
+  if (d.includes('fight phase') || d.includes('melee attack') || d.includes('fight') || isDestroyed) phases.push('Fight Phase');
   
   if (d.includes('makes an attack') || d.includes('selected to attack') || d.includes('an attack that targets')) {
       const isRanged = d.includes('ranged weapon');
