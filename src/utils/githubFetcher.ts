@@ -382,6 +382,49 @@ export async function fetchFactionData(factionFileName: string): Promise<Faction
     }
   }
 
+  // Parse Enhancements globally
+  const allEnhancements: Ability[] = [];
+  
+  for (const doc of allDocs) {
+     const extractFromEntries = (entries: any[]) => {
+         for (const se of entries) {
+             if (se.profiles) {
+                 for (const p of se.profiles) {
+                     if (p.typeName === 'Enhancement') {
+                         const desc = getChar(p, 'Description');
+                         if (desc) {
+                             // Avoid duplicates
+                             if (!allEnhancements.some(e => e.name === (p.name || se.name))) {
+                                 allEnhancements.push({ name: p.name || se.name, description: desc, phase: determinePhase(desc) });
+                             }
+                         }
+                     }
+                 }
+             }
+             if (se.selectionEntries) extractFromEntries(se.selectionEntries);
+             if (se.selectionEntryGroups) extractFromGroups(se.selectionEntryGroups);
+         }
+     };
+     
+     const extractFromGroups = (groups: any[]) => {
+         for (const g of groups) {
+             if (g.selectionEntries) extractFromEntries(g.selectionEntries);
+             if (g.selectionEntryGroups) extractFromGroups(g.selectionEntryGroups);
+         }
+     };
+
+     extractFromEntries(doc.catalogue?.sharedSelectionEntries || []);
+     extractFromGroups(doc.catalogue?.sharedSelectionEntryGroups || []);
+  }
+  
+  if (allEnhancements.length > 0) {
+      detachmentsDB.push({
+         name: 'Army Enhancements',
+         rules: allEnhancements,
+         stratagems: []
+      });
+  }
+
   return {
     units: unitsData,
     detachments: detachmentsDB,
