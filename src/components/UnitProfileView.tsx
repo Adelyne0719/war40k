@@ -199,7 +199,19 @@ export function UnitProfileView({ unitData, parsedUnit, detachmentsDB, onBack }:
              const rName = r.name.toLowerCase();
              if (['leader', 'invulnerable save', 'stealth', 'fights first', 'deep strike', 'lone operative', 'scouts', 'infiltrators', 'feel no pain', 'deadly demise'].includes(rName)) return false;
              if (rName.length < 5) return false;
-             return parsedUnit.rawText.toLowerCase().includes(rName);
+             
+             const rawTextLower = parsedUnit.rawText.toLowerCase();
+             if (rawTextLower.includes(rName)) return true;
+             
+             // Fuzzy match for inverted naming (e.g., "Hunter's Eye" vs "Eye of the Hunter")
+             const cleanRName = rName.replace(/'s\b/g, '').replace(/[^a-z0-9\s]/g, '');
+             const words = cleanRName.split(' ').filter(w => w.length > 2);
+             if (words.length >= 2) {
+                 const allWordsMatch = words.every(w => rawTextLower.includes(w));
+                 if (allWordsMatch) return true;
+             }
+             
+             return false;
           });
 
           if (enhancements.length === 0) return null;

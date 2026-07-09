@@ -390,7 +390,7 @@ export async function fetchFactionData(factionFileName: string): Promise<Faction
          for (const se of entries) {
              if (se.profiles) {
                  for (const p of se.profiles) {
-                     if (p.typeName === 'Enhancement') {
+                     if (p.typeName === 'Abilities' || p.typeName === 'Ability' || p.typeName === 'Enhancement') {
                          const desc = getChar(p, 'Description');
                          if (desc) {
                              // Avoid duplicates
