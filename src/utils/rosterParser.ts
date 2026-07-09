@@ -6,6 +6,7 @@ export interface ParsedUnit {
   modelCount: number;
   rawText: string;
   isDivider?: boolean;
+  isWarlord?: boolean;
 }
 
 export interface RosterMeta {
@@ -91,6 +92,11 @@ export function parseRoster(rosterText: string): ParseResult {
       };
       units.push(currentUnit);
       continue;
+    }
+
+    // Check for Warlord
+    if (currentUnit && (trimmed.includes('Warlord') || trimmed.includes('[Warlord]'))) {
+      currentUnit.isWarlord = true;
     }
 
     // Check for model counts for the current unit
