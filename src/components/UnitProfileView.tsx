@@ -13,18 +13,26 @@ interface UnitProfileViewProps {
 export function UnitProfileView({ unitData, parsedUnit, detachmentsDB, onBack }: UnitProfileViewProps) {
   const { stats, abilities, keywords } = unitData;
 
-  const allWeapons = [...(unitData.rangedWeapons || []), ...(unitData.meleeWeapons || [])];
-
   const filterWeapons = (weapons: any[]) => {
     if (!weapons || weapons.length === 0) return [];
     
-    const hasAnyWeaponListed = allWeapons.some(w => parsedUnit.rawText.toLowerCase().includes(w.name.toLowerCase()));
+    const equipped = weapons.filter(w => {
+       const wName = w.name.toLowerCase();
+       const rText = parsedUnit.rawText.toLowerCase();
+       const cleanWName = wName.replace(/\s*\(.*?\)\s*/g, '').trim();
+       const noHyphenWName = cleanWName.replace(/-/g, ' ');
+       const noHyphenRText = rText.replace(/-/g, ' ');
+       return rText.includes(cleanWName) || noHyphenRText.includes(noHyphenWName);
+    });
     
-    if (hasAnyWeaponListed) {
-       return weapons.filter(w => parsedUnit.rawText.toLowerCase().includes(w.name.toLowerCase()));
+    // If roster text has loadout details (contains ':' or newlines), be strict.
+    // Return what matched, even if empty (so the section hides properly).
+    if (parsedUnit.rawText.includes(':') || parsedUnit.rawText.includes('\n')) {
+       return equipped;
     }
     
-    return weapons;
+    // If it's a minimal string without loadouts, show all weapons as a helpful reference
+    return equipped.length > 0 ? equipped : weapons;
   };
 
   const rangedWeapons = filterWeapons(unitData.rangedWeapons);
