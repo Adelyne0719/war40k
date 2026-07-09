@@ -704,8 +704,8 @@ function App() {
 
                               let combineStyle = '';
                               if (snapshot.combineTargetFor) {
-                                const draggedUnit = parsedUnits.find(u => u.id === snapshot.combineTargetFor);
-                                const targetUnit = unit;
+                                const targetUnit = parsedUnits.find(u => u.id === snapshot.combineTargetFor);
+                                const draggedUnit = unit;
                                 
                                 let isAllowed = false;
                                 if (draggedUnit && targetUnit) {
