@@ -5,6 +5,7 @@ export interface ParsedUnit {
   category: string;
   modelCount: number;
   rawText: string;
+  isDivider?: boolean;
 }
 
 export interface RosterMeta {
@@ -72,6 +73,12 @@ export function parseRoster(rosterText: string): ParseResult {
       }
       isFirstLine = false;
 
+      const KNOWN_CATEGORIES = [
+        'epic hero', 'character', 'infantry', 'vehicle', 'monster', 'swarm', 'battleline', 
+        'dedicated transport', 'allied units', 'fortification', 'titanic', 'legends', 
+        'warlord', 'primarch', 'supreme commander', 'mounted', 'beast'
+      ];
+      
       // If it's a new unit, save the previous one if it exists
       currentUnit = {
         id: name + '-' + Math.random().toString(36).substr(2, 9), // Unique ID for DnD
@@ -79,7 +86,8 @@ export function parseRoster(rosterText: string): ParseResult {
         points: parseInt(match[2], 10),
         category: currentCategory,
         modelCount: 0, // We will count this in the following lines
-        rawText: trimmed
+        rawText: trimmed,
+        isDivider: KNOWN_CATEGORIES.includes(name.toLowerCase())
       };
       units.push(currentUnit);
       continue;

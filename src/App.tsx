@@ -692,8 +692,16 @@ function App() {
                         const attachedBodyguard = attachedBodyguardId ? parsedUnits.find(u => u.id === attachedBodyguardId) : null;
 
                         return (
-                          <Draggable key={id} draggableId={id} index={index}>
+                          <Draggable key={id} draggableId={id} index={index} isDragDisabled={unit.isDivider}>
                             {(provided, snapshot) => {
+                              if (unit.isDivider) {
+                                return (
+                                  <div ref={provided.innerRef} {...provided.draggableProps} style={provided.draggableProps.style} className="mt-6 mb-2">
+                                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider pl-1 border-b border-slate-700/50 pb-1">{unit.name}</h3>
+                                  </div>
+                                );
+                              }
+
                               let combineStyle = '';
                               if (snapshot.combineTargetFor) {
                                 const draggedUnit = parsedUnits.find(u => u.id === snapshot.combineTargetFor);
