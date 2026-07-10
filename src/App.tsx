@@ -97,14 +97,14 @@ function guessCatFileName(text: string): string {
 
 function getPhaseUIInfo(phase: string) {
   switch (phase) {
-    case 'Command Phase': return { num: '1', eng: 'COMMAND' };
-    case 'Movement Phase': return { num: '2', eng: 'MOVEMENT' };
-    case 'Shooting Phase': return { num: '3', eng: 'SHOOTING' };
-    case 'Charge Phase': return { num: '4', eng: 'CHARGE' };
-    case 'Fight Phase': return { num: '5', eng: 'FIGHT' };
-    case 'Command Phase (Battle-shock)': return { num: '!', eng: 'BATTLE-SHOCK' };
-    case 'Deployment': return { num: '0', eng: 'DEPLOYMENT' };
-    default: return { num: '?', eng: 'OTHER' };
+    case 'Command Phase': return { num: '1', kor: '지휘', eng: 'COMMAND' };
+    case 'Movement Phase': return { num: '2', kor: '이동', eng: 'MOVEMENT' };
+    case 'Shooting Phase': return { num: '3', kor: '사격', eng: 'SHOOTING' };
+    case 'Charge Phase': return { num: '4', kor: '돌격', eng: 'CHARGE' };
+    case 'Fight Phase': return { num: '5', kor: '백병전', eng: 'FIGHT' };
+    case 'Command Phase (Battle-shock)': return { num: '!', kor: '전투 충격', eng: 'BATTLE-SHOCK' };
+    case 'Deployment': return { num: '0', kor: '배치', eng: 'DEPLOYMENT' };
+    default: return { num: '?', kor: '기타', eng: 'OTHER' };
   }
 }
 
@@ -112,41 +112,44 @@ function PhaseChecklistTable({ checklists, filterUnitIds }: { checklists: Record
   const [activeTurn, setActiveTurn] = useState<'my' | 'opp'>('my');
 
   return (
-    <div className="border border-slate-600 rounded-xl overflow-hidden bg-slate-900 flex flex-col text-sm xl:text-base">
-       {/* Mobile Turn Toggle (Hidden in landscape since we have enough width) */}
-       <div className="flex xl:hidden border-b border-slate-600 bg-slate-800">
+    <div className="border-t-2 border-slate-700 bg-[#2b2d2f] flex flex-col font-sans">
+       {/* Top Header */}
+       <div className="bg-[#b4cddc] p-3 xl:p-4 border-b border-[#2b2b2b] flex items-end gap-3">
+          <h2 className="text-xl xl:text-2xl font-bold text-slate-900 tracking-tight">페이즈별 체크리스트</h2>
+          <span className="text-xs xl:text-sm text-slate-700 tracking-widest font-semibold mb-0.5">PHASE CHECKLIST</span>
+       </div>
+
+       {/* Mobile Turn Toggle */}
+       <div className="flex xl:hidden border-b border-[#2b2b2b] bg-[#2c2c2c]">
           <button 
              onClick={() => setActiveTurn('my')}
-             className={`flex-1 py-3 text-center font-bold text-sm transition-colors ${activeTurn === 'my' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-700/50'}`}
+             className={`flex-1 py-3 text-center font-bold text-sm transition-colors ${activeTurn === 'my' ? 'bg-[#85c1e9] text-slate-900' : 'text-slate-400 hover:bg-slate-700/50'}`}
           >
-             MY TURN
+             내 턴 MY TURN
           </button>
           <button 
              onClick={() => setActiveTurn('opp')}
-             className={`flex-1 py-3 text-center font-bold text-sm transition-colors ${activeTurn === 'opp' ? 'bg-orange-600/20 text-orange-400 border-b-2 border-orange-500' : 'text-slate-400 hover:bg-slate-700/50'}`}
+             className={`flex-1 py-3 text-center font-bold text-sm transition-colors ${activeTurn === 'opp' ? 'bg-[#f1948a] text-slate-900' : 'text-slate-400 hover:bg-slate-700/50'}`}
           >
-             OPP TURN
+             상대 턴 OPP TURN
           </button>
        </div>
 
        {/* Table Header */}
-       <div className="flex bg-slate-400 text-slate-900 font-bold border-b border-slate-600">
-          <div className="w-10 landscape:w-1/6 xl:w-24 p-2 xl:p-3 text-center border-r border-slate-500 flex items-center justify-center shrink-0">
-             <span className="landscape:hidden xl:hidden text-xs" style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)' }}>PHASE</span>
-             <span className="hidden landscape:inline xl:inline">PHASE</span>
+       <div className="flex bg-[#b4cddc] border-b border-[#2b2b2b]">
+          <div className="w-12 landscape:w-1/6 xl:w-28 p-2 xl:p-3 text-center border-r border-[#2b2b2b] flex items-center justify-center shrink-0">
+             <span className="font-bold text-slate-800 text-sm xl:text-base">페이즈</span>
           </div>
-          <div className={`p-2 xl:p-3 flex-1 border-r border-slate-500 flex items-center gap-2 ${activeTurn === 'my' ? 'flex' : 'hidden xl:flex'} xl:w-5/12`}>
-             <span className="hidden xl:inline">MY TURN</span>
-             <span className="xl:hidden">Active Abilities</span>
+          <div className={`p-2 xl:p-3 flex-1 border-r border-[#2b2b2b] flex items-center gap-2 bg-[#85c1e9] ${activeTurn === 'my' ? 'flex' : 'hidden xl:flex'} xl:w-5/12`}>
+             <span className="font-bold text-slate-900 text-sm xl:text-base">내 턴 <span className="text-[10px] xl:text-xs font-semibold text-slate-700 ml-1 tracking-wider">MY TURN</span></span>
           </div>
-          <div className={`p-2 xl:p-3 flex-1 flex items-center gap-2 ${activeTurn === 'opp' ? 'flex' : 'hidden xl:flex'} xl:w-5/12`}>
-             <span className="hidden xl:inline">OPP TURN</span>
-             <span className="xl:hidden">Active Abilities</span>
+          <div className={`p-2 xl:p-3 flex-1 flex items-center gap-2 bg-[#f1948a] ${activeTurn === 'opp' ? 'flex' : 'hidden xl:flex'} xl:w-5/12`}>
+             <span className="font-bold text-slate-900 text-sm xl:text-base">상대 턴 <span className="text-[10px] xl:text-xs font-semibold text-slate-800 ml-1 tracking-wider">OPP TURN</span></span>
           </div>
        </div>
 
        {/* Table Body */}
-       <div className="flex flex-col divide-y divide-slate-600">
+       <div className="flex flex-col">
          {PHASES.map(phase => {
            let items = checklists[phase];
            if (!items || items.length === 0) return null;
@@ -157,7 +160,6 @@ function PhaseChecklistTable({ checklists, filterUnitIds }: { checklists: Record
 
            if (items.length === 0) return null;
 
-           // Filter out passive/setup abilities that clutter the checklist
            const isIgnored = (name: string) => {
               const n = name.toLowerCase();
               return n === 'leader' || n.includes('damaged:') || n === 'storm shield' || n === 'champion of the kingsguard' || n === 'embarking within transports' || n === 'iron priest' || n === 'deep strike' || n === 'infiltrators' || n === 'scouts' || n === 'lone operative' || n === 'stealth' || n === 'deadly demise' || n === 'feel no pain' || n === 'invulnerable save' || n === 'fights first' || n === 'hover';
@@ -165,50 +167,56 @@ function PhaseChecklistTable({ checklists, filterUnitIds }: { checklists: Record
 
            const myTurnItems = items.filter((item: any) => {
              if (isIgnored(item.ability.name)) return false;
-             const cat = categorizeTurn(item.ability.description);
-             return cat === 'my' || cat === 'both';
+             return categorizeTurn(item.ability.description) === 'my';
            });
            const oppTurnItems = items.filter((item: any) => {
              if (isIgnored(item.ability.name)) return false;
-             const cat = categorizeTurn(item.ability.description);
-             return cat === 'opp' || cat === 'both';
+             return categorizeTurn(item.ability.description) === 'opp';
            });
            
            if (myTurnItems.length === 0 && oppTurnItems.length === 0) return null;
 
            const uiInfo = getPhaseUIInfo(phase);
 
-           const renderItem = (item: any, idx: number) => (
-             <div key={idx} className="flex gap-2 items-start py-2 xl:py-3 border-t border-slate-700/50 first:border-0">
-                <div className="text-slate-500 mt-0.5 shrink-0 text-xs">■</div>
-                <div className="leading-snug text-sm xl:text-base w-full">
-                   <span className={`font-bold ${item.isStratagem ? 'text-red-400' : item.isDetachment ? 'text-purple-400' : item.ability.name.includes('[Enhancement]') ? 'text-amber-400' : 'text-slate-200'}`}>
-                     {item.ability.name.replace('[Enhancement]', '★ ')} {item.isStratagem && <span className="text-red-400/80">(1CP)</span>}
-                   </span>
-                   <span className="text-slate-600 mx-1.5">—</span>
-                   <span className="text-slate-300 font-semibold">{item.unit.name.replace('Detachment: ', '')}</span>
-                   <FormattedDescription text={item.ability.description} className="text-xs xl:text-sm text-slate-400 whitespace-pre-line mt-1.5 leading-relaxed" />
-                </div>
-             </div>
-           );
+           const renderItem = (item: any, idx: number) => {
+             const isDefensive = item.ability.name.includes('[방어]') || categorizeTurn(item.ability.description) === 'opp';
+             const isEnh = item.ability.name.includes('[Enhancement]');
+             return (
+               <div key={idx} className="flex gap-2 items-start py-2">
+                  <div className="text-slate-300 mt-0.5 shrink-0 text-xs xl:text-sm">■</div>
+                  <div className="leading-snug text-sm xl:text-sm w-full text-slate-300">
+                     <span className={`font-bold ${isEnh ? 'text-amber-400' : isDefensive ? 'text-emerald-300' : 'text-slate-100'}`}>
+                       {isEnh ? '★ ' : ''}{item.ability.name.replace('[Enhancement]', '')} 
+                       {item.isStratagem && <span className="text-[#f1948a] ml-1">(1CP)</span>}
+                     </span>
+                     <span className="text-slate-500 mx-1.5">—</span>
+                     <span className="text-slate-300">{item.unit.name.replace('Detachment: ', '')}</span>
+                     <span className="text-slate-500 mx-1.5">—</span>
+                     <span className="text-slate-400 text-xs xl:text-sm">
+                        <FormattedDescription text={item.ability.description} className="inline whitespace-pre-line leading-relaxed" />
+                     </span>
+                  </div>
+               </div>
+             );
+           };
 
            return (
-             <div key={phase} className="flex min-h-[80px]">
+             <div key={phase} className="flex min-h-[80px] border-b border-[#b4cddc]/30 last:border-0">
                 {/* Phase Column */}
-                <div className="w-10 landscape:w-1/6 xl:w-24 bg-slate-400/90 text-slate-900 border-r border-slate-600 flex flex-col items-center justify-center py-4 px-1 xl:p-2 shrink-0">
-                   <div className="text-xl xl:text-3xl font-black mb-2 xl:mb-1">{uiInfo.num}</div>
-                   <div className="font-bold text-[10px] tracking-widest landscape:hidden xl:hidden" style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)' }}>{uiInfo.eng}</div>
-                   <div className="font-bold text-sm xl:text-base tracking-wider hidden landscape:block xl:block">{uiInfo.eng}</div>
+                <div className="w-12 landscape:w-1/6 xl:w-28 bg-[#b4cddc] text-slate-800 border-r border-[#2b2b2b] flex flex-col items-center justify-center py-4 px-1 xl:p-2 shrink-0">
+                   <div className="text-2xl xl:text-3xl font-black mb-1">{uiInfo.num}</div>
+                   <div className="font-bold text-sm xl:text-base tracking-wider">{uiInfo.kor}</div>
+                   <div className="text-[10px] xl:text-xs font-semibold text-slate-700 tracking-wider mt-1">{uiInfo.eng}</div>
                 </div>
                 {/* My Turn Column */}
-                <div className={`p-3 xl:p-4 flex-1 border-r border-slate-600 bg-slate-800/80 hover:bg-slate-800 transition-colors ${activeTurn === 'my' ? 'block' : 'hidden xl:block'} xl:w-5/12`}>
+                <div className={`p-3 xl:p-4 flex-1 border-r border-[#b4cddc]/30 bg-[#2c2c2c] ${activeTurn === 'my' ? 'block' : 'hidden xl:block'} xl:w-5/12`}>
                    {myTurnItems.map((item, idx) => renderItem(item, idx))}
-                   {myTurnItems.length === 0 && <div className="text-slate-500 italic text-sm text-center py-4 xl:hidden">No abilities this turn</div>}
+                   {myTurnItems.length === 0 && <div className="text-slate-600">—</div>}
                 </div>
                 {/* Opp Turn Column */}
-                <div className={`p-3 xl:p-4 flex-1 bg-slate-900/80 hover:bg-slate-900 transition-colors ${activeTurn === 'opp' ? 'block' : 'hidden xl:block'} xl:w-5/12`}>
+                <div className={`p-3 xl:p-4 flex-1 bg-[#2c2c2c] ${activeTurn === 'opp' ? 'block' : 'hidden xl:block'} xl:w-5/12`}>
                    {oppTurnItems.map((item, idx) => renderItem(item, idx))}
-                   {oppTurnItems.length === 0 && <div className="text-slate-500 italic text-sm text-center py-4 xl:hidden">No abilities this turn</div>}
+                   {oppTurnItems.length === 0 && <div className="text-slate-600">—</div>}
                 </div>
              </div>
            );
@@ -218,30 +226,31 @@ function PhaseChecklistTable({ checklists, filterUnitIds }: { checklists: Record
   );
 }
 
-function categorizeTurn(description: string): 'my' | 'opp' | 'both' {
-  if (!description) return 'both';
+function categorizeTurn(description: string): 'my' | 'opp' {
+  if (!description) return 'my';
   const d = description.toLowerCase();
   
-  if (/any phase/i.test(d) || /either player's turn/i.test(d) || /both player/i.test(d)) {
-      return 'both';
-  }
-
-  // Replace "your opponent" with "enemy" to prevent "your" from matching
   const strippedOpp = d.replace(/your opponent's/g, 'enemy').replace(/your opponent/g, 'enemy');
   
   const hasMyPhase = /your \w+ phase/i.test(strippedOpp) || /your turn/i.test(strippedOpp);
   const hasOpponentPhase = /enemy \w+ phase/i.test(strippedOpp) || /enemy turn/i.test(strippedOpp);
 
   if (hasOpponentPhase && !hasMyPhase) return 'opp';
-  if (hasMyPhase && !hasOpponentPhase) return 'my';
-  if (hasMyPhase && hasOpponentPhase) return 'both';
 
-  // Fallback heuristics for abilities that don't explicitly mention phases
-  const isMy = /declare a charge/i.test(strippedOpp) || /charge move/i.test(strippedOpp) || /advanced/i.test(strippedOpp) || /normal move/i.test(strippedOpp) || /fell back/i.test(strippedOpp) || /selected to shoot/i.test(strippedOpp);
+  // Defensive heuristics for "OPP TURN" assignment
+  const isDefensive = /destroyed/i.test(strippedOpp) || 
+                      /saving throw/i.test(strippedOpp) || 
+                      /invulnerable/i.test(strippedOpp) || 
+                      /feel no pain/i.test(strippedOpp) || 
+                      /allocated an attack/i.test(strippedOpp) || 
+                      /targeted/i.test(strippedOpp) || 
+                      /suffers damage/i.test(strippedOpp) ||
+                      /enemy unit declares a charge/i.test(strippedOpp) ||
+                      /enemy unit ends a normal/i.test(strippedOpp);
+
+  if (isDefensive && !hasMyPhase) return 'opp';
   
-  if (isMy) return 'my';
-  
-  return 'both';
+  return 'my';
 }
 
 function App() {
