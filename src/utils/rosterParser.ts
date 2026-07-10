@@ -71,6 +71,22 @@ export function parseRoster(rosterText: string): ParseResult {
       continue;
     }
 
+    // Check if it's a sub-item (model count bullet) BEFORE checking for unitRegex
+    // Because a sub-item might have "[5 pts]" in it and trigger unitRegex!
+    if (trimmed.startsWith('•') || trimmed.startsWith('- ')) {
+      if (currentUnit) {
+        const countMatch = trimmed.match(modelCountRegex);
+        if (countMatch) {
+          currentUnit.modelCount += parseInt(countMatch[1], 10);
+        } else if (trimmed.startsWith('•')) {
+          currentUnit.modelCount += 1;
+        }
+        currentUnit.rawText += '\n' + trimmed;
+      }
+      isFirstLine = false;
+      continue;
+    }
+
     const match = trimmed.match(unitRegex);
     if (match) {
       const name = match[1].trim();
@@ -111,21 +127,15 @@ export function parseRoster(rosterText: string): ParseResult {
       continue;
     }
 
-    // Check for Warlord on subsequent lines
-    if (currentUnit && trimmed.toLowerCase().includes('warlord')) {
-      currentUnit.isWarlord = true;
-    }
-
-    // Check for model counts for the current unit
-    if (currentUnit && trimmed.startsWith('•')) {
-      const countMatch = trimmed.match(modelCountRegex);
-      if (countMatch) {
-        currentUnit.modelCount += parseInt(countMatch[1], 10);
-      } else {
-        // If there's a bullet but no number (e.g. • 1x is missing, just • Model Name), we assume 1
-        currentUnit.modelCount += 1;
+    // If it didn't match anything above, it's a continuation line (e.g. Warlord line, rules line)
+    if (currentUnit) {
+      if (trimmed.toLowerCase().includes('warlord')) {
+        currentUnit.isWarlord = true;
       }
+      currentUnit.rawText += '\n' + trimmed;
     }
+    
+    isFirstLine = false;
   }
   
   // For units that didn't have any bullet points, default to 1 model (e.g. single characters)
