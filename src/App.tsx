@@ -108,7 +108,7 @@ function getPhaseUIInfo(phase: string) {
   }
 }
 
-function PhaseChecklistTable({ checklists, filterUnitIds }: { checklists: Record<string, any[]>, filterUnitIds?: string[] }) {
+function PhaseChecklistTable({ checklists, filterUnitIds, aiClassifications }: { checklists: Record<string, any[]>, filterUnitIds?: string[], aiClassifications?: Record<string, string> }) {
   const [activeTurn, setActiveTurn] = useState<'my' | 'opp'>('my');
 
   return (
@@ -165,11 +165,13 @@ function PhaseChecklistTable({ checklists, filterUnitIds }: { checklists: Record
 
            const myTurnItems = items.filter((item: any) => {
              if (isIgnored(item.ability.name)) return false;
-             return categorizeTurn(item.ability.description) === 'my';
+             if (aiClassifications && aiClassifications[item.ability.name] === 'ignore') return false;
+             return categorizeTurn(item.ability.name, item.ability.description, aiClassifications) === 'my';
            });
            const oppTurnItems = items.filter((item: any) => {
              if (isIgnored(item.ability.name)) return false;
-             return categorizeTurn(item.ability.description) === 'opp';
+             if (aiClassifications && aiClassifications[item.ability.name] === 'ignore') return false;
+             return categorizeTurn(item.ability.name, item.ability.description, aiClassifications) === 'opp';
            });
            
            if (myTurnItems.length === 0 && oppTurnItems.length === 0) return null;
@@ -216,7 +218,13 @@ function PhaseChecklistTable({ checklists, filterUnitIds }: { checklists: Record
   );
 }
 
-function categorizeTurn(description: string): 'my' | 'opp' {
+function categorizeTurn(abilityName: string, description: string, aiClassifications?: Record<string, string>): 'my' | 'opp' {
+  if (aiClassifications && aiClassifications[abilityName]) {
+     const cat = aiClassifications[abilityName];
+     if (cat === 'opp') return 'opp';
+     if (cat === 'my' || cat === 'both') return 'my';
+  }
+
   if (!description) return 'my';
   const d = description.toLowerCase();
   
@@ -273,6 +281,15 @@ function App() {
   const [detachmentsDB, setDetachmentsDB] = useState<DetachmentData[]>([]);
   const [coreRules, setCoreRules] = useState<Ability[]>([]);
   const [fallbackRules, setFallbackRules] = useState<{detachment: string, name: string, description: string, phase: string}[]>([]);
+  const [aiClassifications, setAiClassifications] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    fetch('/ai_classification.json')
+      .then(res => res.json())
+      .then(data => setAiClassifications(data))
+      .catch(() => console.log('No AI classifications found, using fallback heuristics.'));
+  }, []);
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -1021,7 +1038,7 @@ function App() {
                              Unit Checklist
                           </h3>
                           <div className="xl:flex-grow xl:overflow-y-auto custom-scrollbar pr-1 pb-10">
-                             <PhaseChecklistTable checklists={checklists} filterUnitIds={relevantIds} />
+                             <PhaseChecklistTable checklists={checklists} filterUnitIds={relevantIds} aiClassifications={aiClassifications} />
                           </div>
                        </div>
                     </div>
@@ -1059,7 +1076,7 @@ function App() {
                         </div>
                       );
                     })}
-                    <PhaseChecklistTable checklists={checklists} />
+                    <PhaseChecklistTable checklists={checklists} aiClassifications={aiClassifications} />
             </div>
           )}
           </div>
